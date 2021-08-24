@@ -37,3 +37,4 @@ def objectiveFunction6(x):
 
 # Run the code from here.
 start()
+print("Hello")
