@@ -84,8 +84,8 @@ def start():
 
     plt.figure(2)
     plt.title("Interval Halving Method")
-    plt.xlabel("x_m in various iterations")
-    plt.ylabel("F(x_m) in various iterations")
+    plt.xlabel("x in various iterations")
+    plt.ylabel("F(x) in various iterations")
     plt.plot(x_1_series, f_x_1_series, "k^-")
     plt.plot(x_m_series, f_x_m_series, "b+-")
     plt.plot(x_2_series, f_x_2_series, "yo-")
@@ -221,7 +221,23 @@ def objectiveFunction(x):
     # check whther the x is already stored in the queue
     global noOf_functionEval
     if (x in myQ_1.x_values):
-        return (myQ_1.function_values[myQ_1.x_values.index(x)])
+        index = myQ_1.x_values.index(x)
+        value = myQ_1.function_values[myQ_1.x_values.index(x)]
+        
+        # While dealing with Queue,
+        # there might be a chance of one value remaining fixed (let say x_m) in corresponding itaraions.
+        # Hence if you keep pushing other new value (let say x_1), it will soon eats up all the queue size
+        # and you have to loose the the fixed value (in this case x_m).
+        # So let update the the value as a last item if it appears again.
+
+        if(index == 0):
+            # When we are about to loose the value swap the value at the end again of the queue.
+            myQ_1.x_values.pop(0)
+            myQ_1.x_values.append(x)
+            myQ_1.function_values.pop(0)
+            myQ_1.function_values.append(value)
+
+        return value
     else:
         noOf_functionEval += 1
         if (objectiveFunctionIndicator == 1):
