@@ -3,12 +3,10 @@ import math
 import random
 
 # Global Variables and Data Structures
-objectiveFunctionIndicator = 1
+objectiveFunctionIndicator = 1 #default value
 epsinol = 10**-3
-delta = 0.0198
-lowerLimit = -10
-upperLimit = 0.5
-noOf_functionEval = 0
+delta = None
+noOf_functionEval = None
 queueSize = 5
 myQ_1 = None  # Queue
 out = open(r"Phase_1_iterations.out", "w")
@@ -52,13 +50,23 @@ class CustomQueue:
 # Initiate the Optimization Method Here
 def start():
     # take input from the user and run the methods
-    global out, noOf_functionEval, myQ_1
+    global out, noOf_functionEval, myQ_1, objectiveFunctionIndicator, delta
 
     # set no of function evaluation = 0
     noOf_functionEval = 0
 
     # reinitialise the queue
     myQ_1 = CustomQueue()
+    
+    objectiveFunctionIndicator = float(input("Input the serial number of desired objective function\t->\t"))
+    lowerLimit = float(input("Please enter the lower limit\t->\t"))
+    upperLimit = float(input("Please enter the upper limit\t->\t"))
+    intermediatepoints = float(input("Please enter the number of intermediate points\t->\t"))
+
+    
+
+    delta = (upperLimit-lowerLimit)/intermediatepoints
+
     [a, b] = boundingPhaseMethod(lowerLimit, upperLimit)
 
     print(f"Bounding Phase Method -> {a} to {b}")
@@ -84,8 +92,8 @@ def start():
 
     plt.figure(2)
     plt.title("Interval Halving Method")
-    plt.xlabel("x_m in various iterations")
-    plt.ylabel("F(x_m) in various iterations")
+    plt.xlabel("x in various iterations")
+    plt.ylabel("F(x) in various iterations")
     plt.plot(x_1_series, f_x_1_series, "k^-")
     plt.plot(x_m_series, f_x_m_series, "b+-")
     plt.plot(x_2_series, f_x_2_series, "yo-")
@@ -103,7 +111,7 @@ def boundingPhaseMethod(a, b):
     out.write("#Iteration\tx\tf(x)\n")
 
     k = 0
-    deltaWithSign = 0
+    deltaWithSign = None
     while True:
         # step 1
         x_0 = random.uniform(a, b)
@@ -210,7 +218,6 @@ def intervalHalving(a, b):
         l = b-a
         if abs(l) < epsinol:
             return [a, b]
-            break
         else:
             no_of_iteration += 1
             continue
@@ -221,21 +228,37 @@ def objectiveFunction(x):
     # check whther the x is already stored in the queue
     global noOf_functionEval
     if (x in myQ_1.x_values):
-        return (myQ_1.function_values[myQ_1.x_values.index(x)])
+        index = myQ_1.x_values.index(x)
+        value = myQ_1.function_values[myQ_1.x_values.index(x)]
+        
+        # While dealing with Queue,
+        # there might be a chance of one value remaining fixed (let say x_m) in corresponding itaraions.
+        # Hence if you keep pushing other new value (let say x_1), it will soon eats up all the queue size
+        # and you have to loose the the fixed value (in this case x_m).
+        # So let update the the value as a last item if it appears again.
+
+        if(index == 0):
+            # When we are about to loose the value swap the value at the end again of the queue.
+            myQ_1.x_values.pop(0)
+            myQ_1.x_values.append(x)
+            myQ_1.function_values.pop(0)
+            myQ_1.function_values.append(value)
+
+        return value
     else:
         noOf_functionEval += 1
         if (objectiveFunctionIndicator == 1):
             value = (x**2-1)**3-(2*x-5)**4
         elif(objectiveFunctionIndicator == 2):
-            pass
+            value = -(8 + x**3 - 2*x - 2*math.exp(x))
         elif(objectiveFunctionIndicator == 3):
-            pass
+            value = -(4*x*math.sin(x))
         elif(objectiveFunctionIndicator == 4):
-            pass
+            value = 2*(x-3)**2 + math.exp(0.5*x**2)
         elif(objectiveFunctionIndicator == 5):
-            pass
+            value = x**2 - 10*math.exp(0.1*x)
         elif(objectiveFunctionIndicator == 6):
-            pass
+            value = -(20*math.sin(x) - 15*x**2)
 
     myQ_1.push_x_and_f_value(x, value)
     return value
