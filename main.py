@@ -75,9 +75,9 @@ def start():
 
     plt.figure(1)
     plt.title("Bounding Phase Method")
-    plt.xlabel("x in various iterations")
-    plt.ylabel("F(x) in various Iterations")
-    plt.plot(x_series, f_x_series, "r*-")
+    plt.xlabel("Iteration count")
+    plt.ylabel("F(x) in Various Iterations")
+    plt.plot(range(1,len(x_series)+1), f_x_series, "r*-")
 
     # re-initialise the queue
     myQ_1 = CustomQueue()
@@ -92,11 +92,11 @@ def start():
 
     plt.figure(2)
     plt.title("Interval Halving Method")
-    plt.xlabel("x in various iterations")
-    plt.ylabel("F(x) in various iterations")
-    plt.plot(x_1_series, f_x_1_series, "k^-")
-    plt.plot(x_m_series, f_x_m_series, "b+-")
-    plt.plot(x_2_series, f_x_2_series, "yo-")
+    plt.xlabel("Iteration count")
+    plt.ylabel("F(x) in Various iterations")
+    plt.plot(range(1,len(x_1_series)+1), f_x_1_series, "k^-")
+    plt.plot(range(1,len(x_m_series)+1), f_x_m_series, "b+-")
+    plt.plot(range(1,len(x_2_series)+1), f_x_2_series, "yo-")
     plt.legend(["f(x_1)", "f(x_m)", "f(x_2)"])
 
     plt.show()
